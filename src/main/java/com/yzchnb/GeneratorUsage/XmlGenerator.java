@@ -27,7 +27,7 @@ public class XmlGenerator implements Generator{
     public String generateMapperXml(FunctionDetail functionDetail) throws Exception{
         StringBuilder builder = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n" +
                         "<!DOCTYPE mapper PUBLIC \"-//mybatis.org//DTD Mapper 3.0//EN\" \"http://mybatis.org/dtd/mybatis-3-mapper.dtd\">\n" +
-                        "<mapper namespace=\"@packageName@.@mapperName@\">\n" +
+                        "<mapper namespace=\"@packageName@.@mapperName@Mapper\">\n" +
                         "\n" +
                         "\t<parameterMap id=\"paramMapX\" type=\"java.util.Map\">\n");
         buildParameters(builder, functionDetail);
@@ -54,18 +54,20 @@ public class XmlGenerator implements Generator{
     private static void buildParameters(StringBuilder builder, FunctionDetail functionDetail){
         String returnType = functionDetail.getReturnType();
         ArrayList<Param> oracleParams = functionDetail.getParams();
-        String template = "\t\t<parameter property=\"@paramName@\"  javaType=\"@javaType@\" jdbcType=\"@jdbcType@\" mode=\"@direction@\"/>\n";
+        String template = "\t\t<parameter property=\"@paramName@\"  javaType=\"@javaType@\" jdbcType=\"@jdbcType@\" mode=\"@direction@\" @resultMap@/>\n";
         builder.append(template
+                .replaceAll("@resultMap@", "")
                 .replaceAll("@paramName@", "return")
                 .replaceAll("@javaType@", oracleToJava(returnType.toUpperCase()))
                 .replaceAll("@direction@", "OUT")
                 .replaceAll("@jdbcType@", oracleToJdbc(returnType.toUpperCase())));
         for (Param oracleParam : oracleParams) {
             builder.append(template
-            .replaceAll("@paramName@", oracleParam.getParamType().toUpperCase().equals("SYS_REFCURSOR") ? "data" : snakeToCamel(oracleParam.getParamName().toUpperCase()))
-            .replaceAll("@javaType@", oracleToJava(oracleParam.getParamType().toUpperCase()))
-            .replaceAll("@jdbcType@", oracleToJdbc(oracleParam.getParamType().toUpperCase()))
-            .replaceAll("@direction@", oracleParam.getParamDirection().toUpperCase()));
+                    .replaceAll("@paramName@", oracleParam.getParamType().toUpperCase().equals("SYS_REFCURSOR") ? "data" : snakeToCamel(oracleParam.getParamName().toUpperCase()))
+                    .replaceAll("@resultMap@", oracleParam.getParamType().toUpperCase().equals("SYS_REFCURSOR") ? "resultMap=\"cursorMapX\"" : "")
+                    .replaceAll("@javaType@", oracleToJava(oracleParam.getParamType().toUpperCase()))
+                    .replaceAll("@jdbcType@", oracleToJdbc(oracleParam.getParamType().toUpperCase()))
+                    .replaceAll("@direction@", oracleParam.getParamDirection().toUpperCase()));
         }
     }
 
