@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.regex.Matcher;
 
 import static com.yzchnb.Utils.NameTransformer.snakeToPasca;
 
@@ -47,32 +48,32 @@ public class CodeGenerator {
 
     private void generateCode(FunctionDetail functionDetail) throws Exception{
         String functionNamePasca = snakeToPasca(functionDetail.getFunctionName());
-        String callerDir = projectRootDir + File.separator + callerPackage.replaceAll("\\.", File.separator);
-        String mapperDir = projectRootDir + File.separator + mapperPackage.replaceAll("\\.", File.separator);
+        String callerDir = projectRootDir + Matcher.quoteReplacement(File.separator) + callerPackage.replaceAll("\\.", Matcher.quoteReplacement(File.separator));
+        String mapperDir = projectRootDir + Matcher.quoteReplacement(File.separator) + mapperPackage.replaceAll("\\.", Matcher.quoteReplacement(File.separator));
         //xml
         XmlGenerator xmlGenerator = new XmlGenerator(mapperPackage);
         String xml = xmlGenerator.generateMapperXml(functionDetail);
-        writeToFile(xmlDir + File.separator + functionNamePasca + "Mapper.xml", xml);
+        writeToFile(xmlDir + Matcher.quoteReplacement(File.separator) + functionNamePasca + "Mapper.xml", xml);
         //mapperInterface
         InterfaceGenerator interfaceGenerator = new InterfaceGenerator(mapperPackage);
         String interfaceCode = interfaceGenerator.generate(functionDetail);
-        writeToFile(mapperDir + File.separator + functionNamePasca + "Mapper.java", interfaceCode);
+        writeToFile(mapperDir + Matcher.quoteReplacement(File.separator) + functionNamePasca + "Mapper.java", interfaceCode);
         //mapperImplementation
         ImplGenerator implGenerator = new ImplGenerator(callerPackage, mapperPackage);
         String implCode = implGenerator.generate(functionDetail);
-        writeToFile(callerDir + File.separator + functionNamePasca + "Caller.java", implCode);
+        writeToFile(callerDir + Matcher.quoteReplacement(File.separator) + functionNamePasca + "Caller.java", implCode);
     }
 
     private void generateBaseCaller() throws Exception{
         BaseCallerGenerator.callerPackage = callerPackage;
-        File baseCallerDir = new File(projectRootDir, callerPackage.replaceAll("\\.", File.separator) + File.separator + "BaseCaller");
+        File baseCallerDir = new File(projectRootDir, callerPackage.replaceAll("\\.", Matcher.quoteReplacement(File.separator)) + Matcher.quoteReplacement(File.separator) + "BaseCaller");
         if(!baseCallerDir.exists()){
             if(!baseCallerDir.mkdir()){
                 throw new Exception("make baseCallerDir failed");
             }
         }
         String baseCallerCode = BaseCallerGenerator.generate();
-        writeToFile(baseCallerDir + File.separator + "FuncBaseCaller.java", baseCallerCode);
+        writeToFile(baseCallerDir + Matcher.quoteReplacement(File.separator) + "FuncBaseCaller.java", baseCallerCode);
     }
 
     private static void writeToFile(String filePath, String content) throws Exception{
@@ -98,8 +99,8 @@ public class CodeGenerator {
         String mapperPackage = "com.yzchnb.twitter.dao.FunctionMapper";
         System.out.println(functionDetail);
         String functionNamePasca = snakeToPasca(functionDetail.getFunctionName());
-        String callerDir = projectRootDir + File.separator + callerPackage.replaceAll("\\.", File.separator);
-        String mapperDir = projectRootDir + File.separator + mapperPackage.replaceAll("\\.", File.separator);
+        String callerDir = projectRootDir + Matcher.quoteReplacement(File.separator) + callerPackage.replaceAll("\\.", Matcher.quoteReplacement(Matcher.quoteReplacement(File.separator)));
+        String mapperDir = projectRootDir + Matcher.quoteReplacement(File.separator) + mapperPackage.replaceAll("\\.", Matcher.quoteReplacement(Matcher.quoteReplacement(File.separator)));
         //xml
         XmlGenerator xmlGenerator = new XmlGenerator(mapperPackage);
         String xml = xmlGenerator.generateMapperXml(functionDetail);

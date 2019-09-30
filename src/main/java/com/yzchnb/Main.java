@@ -6,6 +6,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import java.io.File;
+import java.util.regex.Matcher;
 
 @Mojo(name = "generate")
 public class Main extends AbstractMojo {
@@ -47,7 +48,7 @@ public class Main extends AbstractMojo {
             codeGenerator.setParser(oracleFunctionParser);
             codeGenerator.generate();
         }catch (Exception e){
-            throw new MojoExecutionException("error occurred");
+            throw new MojoExecutionException("error occurred\n" + e.getMessage());
         }
 //        String mapperPath = "";
 //        File f = new File(mapperPath);
@@ -101,8 +102,8 @@ public class Main extends AbstractMojo {
         }
         File xmlDir, mapperDir, callerDir;
         xmlDir = new File(this.xmlDir);
-        mapperDir = new File(projecRootDir, mapperPackage.replaceAll("\\.", File.separator));
-        callerDir = new File(projecRootDir, callerPackage.replaceAll("\\.", File.separator));
+        mapperDir = new File(projecRootDir, mapperPackage.replaceAll("\\.", Matcher.quoteReplacement(File.separator)));
+        callerDir = new File(projecRootDir, callerPackage.replaceAll("\\.", Matcher.quoteReplacement(File.separator)));
         System.out.println("mapperDir : " + mapperDir);
         System.out.println("callerDir : " + callerDir);
         System.out.println("xmlDir : " + mapperDir);
